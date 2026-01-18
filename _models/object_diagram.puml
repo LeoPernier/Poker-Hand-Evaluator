@@ -1,0 +1,93 @@
+@startuml
+!include _common.style
+
+title Poker (Object)
+center footer Projet #1 - Diagramme d'objet
+
+object "c1: Card" as C1 {
+  rank = ACE
+  suit = HEARTS
+}
+object "c2: Card" as C2 {
+  rank = FOUR
+  suit = HEARTS
+}
+object "c3: Card" as C3 {
+  rank = SIX
+  suit = HEARTS
+}
+object "c4: Card" as C4 {
+  rank = JACK
+  suit = HEARTS
+}
+object "c5: Card" as C5 {
+  rank = EIGHT
+  suit = HEARTS
+}
+
+object "h1: Hand" as H1 {
+  cards = [c1, c2, c3, c4, c5]
+}
+
+object "c6: Card" as C6 {
+  rank = TWO
+  suit = CLUBS
+}
+object "c7: Card" as C7 {
+  rank = TWO
+  suit = DIAMONDS
+}
+object "c8: Card" as C8 {
+  rank = FIVE
+  suit = HEARTS
+}
+object "c9: Card" as C9 {
+  rank = TEN
+  suit = SPADES
+}
+object "c10: Card" as C10 {
+  rank = KING
+  suit = SPADES
+}
+
+object "h2: Hand" as H2 {
+  cards = [c6, c7, c8, c9, c10]
+}
+
+object "arb: Arbiter" as A {
+  evaluators = [FlushEvaluator, StraightEvaluator, ThreeOfKindEvaluator, PairEvaluator, HighCardEvaluator]
+}
+
+object "r1: FlushRank" as R1 {
+  cards = [c4, c5, c3, c2, c1]
+}
+object "r2: PairRank" as R2 {
+  pairValue = 2
+  kickers = [13, 10, 5]
+}
+
+object "winners: List<Hand>" as W {
+  values = [h1]
+}
+
+H1 *-- C1
+H1 *-- C2
+H1 *-- C3
+H1 *-- C4
+H1 *-- C5
+
+H2 *-- C6
+H2 *-- C7
+H2 *-- C8
+H2 *-- C9
+H2 *-- C10
+
+A ..> H1 : reçois
+A ..> H2 : reçois
+A ..> R1 : génère
+A ..> R2 : génère
+
+W --> H1
+
+@enduml
+

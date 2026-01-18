@@ -1,0 +1,199 @@
+@startuml
+!include _common.style
+
+title Poker (Structure)
+center footer Projet #1 - diagramme de classes
+
+package io.github.leopernier.poker {
+
+  class Main {
+    String result
+    --
+    + {static} main(args: String[])
+  }
+
+  class Arbiter {
+    List<HandEvaluator> evaluators
+    --
+    + Arbiter()
+    + determineWinners(hands: List<Hand>): List<Hand>
+    --
+    - rankHands(hands: List<Hand>): Map<Hand, HandRank>
+  }
+
+  interface HandEvaluator {
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+  class FlushEvaluator {
+    --
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+  class StraightEvaluator {
+    --
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+  class ThreeOfKindEvaluator {
+    --
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+  class PairEvaluator {
+    --
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+  class HighCardEvaluator {
+    --
+    + evaluate(hand: Hand): Optional<HandRank>
+  }
+
+}
+
+package io.github.leopernier.poker.model {
+
+  class Hand {
+    List<Card> cards
+    --
+    + Hand(cards: List<Card>)
+    + getHand(): List<Card>
+  }
+
+  class Card {
+    Rank rank
+    Suit suit
+    --
+    + Card(rank: Rank, suit: Suit)
+    + static fromString(s: String): Card
+    + getRank(): Rank
+    + getSuit(): Suit
+  }
+
+}
+
+package io.github.leopernier.poker.enums {
+
+  enum Rank {
+    ACE
+    TWO
+    THREE
+    FOUR
+    FIVE
+    SIX
+    SEVEN
+    EIGHT
+    NINE
+    TEN
+    JACK
+    QUEEN
+    KING
+    --
+    + getSymbol(): Char
+    + getRank(): Int
+    + static fromChar(c: Char): Rank
+  }
+
+  enum Suit {
+    CLUBS
+    DIAMONDS
+    HEARTS
+    SPADES
+    --
+    + getSymbol(): Char
+    + static fromChar(c: Char): Suit
+  }
+}
+
+package io.github.leopernier.poker.rank {
+
+  interface HandRank {
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+  }
+
+  abstract class AbstractHandRank {
+    --
+    + compareTo(other: HandRank): Int
+    + equals(o: Object): Boolean
+    + hashCode(): Int
+  }
+
+  class FlushRank {
+    List<Card> cards
+    --
+    + FlushRank(hand: Hand)
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+    + toString(): String
+  }
+
+  class StraightRank {
+    int highCardValue
+    --
+    + StraightRank(hand: Hand)
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+    + toString(): String
+  }
+
+  class ThreeOfKindRank {
+    int trioValue
+    List<Integer> kickersDescription
+    --
+    + ThreeOfKindRank(hand: Hand)
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+    + toString(): String
+  }
+
+  class PairRank {
+    int pairValue
+    List<Integer> kickersDescription
+    --
+    + PairRank(hand: Hand)
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+    + toString(): String
+  }
+
+  class HighCardRank {
+    List<Card> cards
+    --
+    + HighCardRank(hand: Hand)
+    + getPriority(): Int
+    + compareSameRank(other: HandRank): Int
+    + toString(): String
+  }
+}
+
+HandEvaluator <|.. FlushEvaluator
+HandEvaluator <|.. StraightEvaluator
+HandEvaluator <|.. ThreeOfKindEvaluator
+HandEvaluator <|.. PairEvaluator
+HandEvaluator <|.. HighCardEvaluator
+
+HandRank            <|.. AbstractHandRank
+AbstractHandRank    <|-- FlushRank
+AbstractHandRank    <|-- StraightRank
+AbstractHandRank    <|-- ThreeOfKindRank
+AbstractHandRank    <|-- PairRank
+AbstractHandRank    <|-- HighCardRank
+
+FlushEvaluator          ..|> HandRank : utilise
+StraightEvaluator       ..|> HandRank : utilise
+ThreeOfKindEvaluator    ..|> HandRank : utilise
+PairEvaluator           ..|> HandRank : utilise
+HighCardEvaluator       ..|> HandRank : utilise
+
+Arbiter     -->     HandEvaluator   : utilise
+Main        -->     Arbiter         : utilise
+Main        -->     Hand            : crée
+Main        -->     Card            : crée
+Hand "1"    *-- "5" Card            : contient
+Card        -->     Rank
+Card        -->     Suit
+
+@enduml
+

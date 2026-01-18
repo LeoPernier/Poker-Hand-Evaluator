@@ -1,0 +1,115 @@
+@startuml
+!include _common.style
+
+title Poker (Behavior)
+center footer Projet #1 - Diagramme de séquence
+
+actor "User" as U
+participant "_: Main" as M
+participant "S: Scanner" as S
+participant "_: Arbiter" as A
+participant "_: FlushEvaluator" as F
+participant "_: StraightEvaluator" as SE
+participant "_: ThreeOfKindEvaluator" as T3
+participant "_: PairEvaluator" as P
+participant "_: HighCardEvaluator" as HC
+
+U -> M: main(args: String[])
+activate M
+    alt args.length > 0
+        alt args.length == 1
+            M --> U: "Error: There must be at least 2 players!"
+            deactivate M
+            return
+        else
+            loop for each arg in args
+                M -> M: h = parseHandFromString(arg)
+                M -> M: hands.add(h)
+            end
+        end
+    else
+        M -> U: "Number of players: "
+        M -> S: new Scanner(System.in)
+        create S
+        M -> S: readLine()
+        S --> M: line (string)
+        M -> M: try { n = Integer.parseInt(line) }
+        alt NumberFormatException
+            M --> U: "Error: Invalid number of players (" + line + ")!"
+            deactivate M
+            return
+        end
+        alt n < 2
+            M --> U: "Error: There must be at least 2 players!"
+            deactivate M
+            return
+        end
+        loop i from 1 to n
+            M -> U: "p" + i + "? "
+            M -> S: readLine()
+            S --> M: handString (string)
+            M -> M: h = parseHandFromString(handString)
+            M -> M: hands.add(h)
+        end
+        M -> S: close()
+        destroy S
+    end
+
+    M -> A: determineWinners(hands)
+    activate A
+        loop for each hand in hands
+            A -> F: evaluate(hand)
+            alt is Flush
+                F --> A: Optional(FlushRank)
+            else
+                A -> SE: evaluate(hand)
+                alt is Straight
+                    SE --> A: Optional(StraightRank)
+                else
+                    A -> T3: evaluate(hand)
+                    alt is ThreeOfKind
+                        T3 --> A: Optional(ThreeOfKindRank)
+                    else
+                        A -> P: evaluate(hand)
+                        alt is Pair
+                            P --> A: Optional(PairRank)
+                        else
+                            A -> HC: evaluate(hand)
+                            HC --> A: Optional(HighCardRank)
+                        end
+                    end
+                end
+            end
+        end
+        A --> M: winners : List<Hand>
+    deactivate A
+
+    alt winners.size() == 1
+        M -> M: ranking = A.getRanking()
+        M -> M: handsDesc = buildHandsDescription(ranking)
+        M -> M: winHand = winners.get(0)
+        M -> M: winIndex = indexOf(winHand) + 1
+        M --> U: "Result: P" + winIndex
+
+        M -> M: descWin = handsDesc.get(winHand)
+        M -> M: descLosers = ""
+        loop for each h in hands where h != winHand
+            M -> M: descL = handsDesc.get(h)
+            M -> M: loserIndex = indexOf(h) + 1
+            M -> M: append(descLosers, descL + " for P" + loserIndex + (not last loser ? ", " : ""))
+        end
+        M --> U: "Description: " + descWin + " for P" + winIndex + " beats " + descLosers
+    else
+        M -> U: "result: TIE among "
+        loop for each winner in winners
+            M -> U: ("P" + (indexOf(winner) + 1))
+            alt not last winner
+                M -> U: " and "
+            end
+        end
+        M --> U: "\n"
+    end
+deactivate M
+
+@enduml
+
