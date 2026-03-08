@@ -7,40 +7,37 @@
 </p>
 
 <h1 align="center">Poker Hand Evaluator</h1>
+<p align="center">Command-line poker arbiter that compares 2+ five-card hands and prints a readable winner explanation (or tie).</p>
 
-<p align="center">
-  Command-line poker arbiter that compares 2+ five-card hands and prints a readable winner explanation (or tie).
-</p>
-
----
+--------------------------------------------------
 
 ## Overview
 
 This project parses and validates multiple 5 cards poker hands, ranks them, and determines the winner(s). It’s a small Java CLI that focuses on clean modeling, a pluggable evaluation pipeline, and deterministic tie-breaking via comparable rank objects. Built to be easy to read, test, and extend.
 
----
+--------------------------------------------------
 
 ## Demo
 
-Below are two runs of the CLI: **interactive mode** and **args mode**.
+Below are two runs of the CLI, **interactive mode** and **args mode**:
 
 ### 1) Interactive mode
 
-```bash
-mvn exec:java
+``` bash
+  mvn exec:java
 ```
 
 ![Interactive mode demo](assets/demo1.png)
 
 ### 2) Args mode
 
-```bash
-mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "TS TC TD 7S 7D"'
+``` bash
+  mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "TS TC TD 7S 7D"'
 ```
 
 ![Args mode demo](assets/demo2.png)
 
----
+--------------------------------------------------
 
 ## Features
 
@@ -55,7 +52,7 @@ mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "TS TC TD 7S 7D"'
 - **Extensible evaluation design**: Ordered evaluator pipeline.
 - **Deterministic comparisons**: Each hand maps to a `HandRank` that implements `Comparable` for clean winner selection.
 
----
+--------------------------------------------------
 
 ## Supported hand types
 
@@ -67,24 +64,22 @@ This implementation currently evaluates (highest to lowest):
 4. Pair
 5. High Card
 
-> Note: More hand types will be added in future updates.
+> **Note:** More hand types will be added in future updates.
 
----
+--------------------------------------------------
 
 ## Card format
 
 Each card is two characters: `<RANK><SUIT>`
 
-- Ranks: `1 2 3 4 5 6 7 8 9 T J Q K`
-- Suits: `C` (Clubs), `D` (Diamonds), `H` (Hearts) and `S` (Spades)
+- **Ranks:** `1 2 3 4 5 6 7 8 9 T J Q K`
+- **Suits:** `C` (Clubs), `D` (Diamonds), `H` (Hearts) and `S` (Spades)
 
-> Note: Ace is `1` and not `A` in this project.
+> **Note:** Ace is `1` and not `A` in this project.
 
-Example hand:
+Example hand: `TH 7C KD 3S 2D`
 
-`TH 7C KD 3S 2D`
-
----
+--------------------------------------------------
 
 ## Tech Stack
 
@@ -92,7 +87,7 @@ Example hand:
 - **Build:** Maven
 - **Testing:** JUnit 4.12
 
----
+--------------------------------------------------
 
 ## Getting Started
 
@@ -105,63 +100,64 @@ Example hand:
 
 #### 1) Run tests
 
-```bash
-mvn -q test
+``` bash
+  mvn -q test
 ```
 
 #### 2) Interactive mode
 
-```bash
-mvn -q exec:java
+``` bash
+  mvn -q exec:java
 ```
 
 Then follow the prompts:
 
-```txt
-Number of players: 3
-p1? TH 7C KD 3S 2D
-p2? 2H 5H 7H 9H JH
-p3? KC 9D 7S 4C 2D
+``` txt
+  Number of players: 3
+  p1? TH 7C KD 3S 2D
+  p2? 2H 5H 7H 9H JH
+  p3? KC 9D 7S 4C 2D
 ```
 
 #### 3) Args mode
 
 Each hand must be passed as one quoted argument.
 
-```bash
-mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "TS TC TD 7S 7D"'
+``` bash
+  mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "TS TC TD 7S 7D"'
 ```
 
 You can pass more players the same way:
 
-```bash
-mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "2H 5H 7H 9H JH" "KC 9D 7S 4C 2D"'
+``` bash
+  mvn -q exec:java -Dexec.args='"TH 7C KD 3S 2D" "2H 5H 7H 9H JH" "KC 9D 7S 4C 2D"'
 ```
 
----
+--------------------------------------------------
 
 ## Project Structure
 
-```txt
-src/
- ├── main/java/io/github/leopernier/poker/
- │   ├── Main.java                  # CLI + input/output
- │   ├── Arbiter.java               # Ranks hands + selects winner(s)
- │   ├── evaluator/                 # Hand detectors
- │   ├── model/                     # Card, Hand
- │   ├── rank/                      # Comparable rank objects
- │   └── enums/                     # Rank, Suit
- └── test/java/io/github/leopernier/poker/
-     └── MainTest.java              # Arbiter scenarios + tie cases
-_models/                            # PlantUML diagrams
-Makefile                            # Diagram generation helpers
-assets/                             # Demo images
-README.md
-pom.xml
-LICENSE
+``` txt
+  src/
+    ├── main/java/io/github/leopernier/poker/
+    │   ├── Main.java                           # CLI + input/output
+    │   ├── Arbiter.java                        # Ranks hands + selects winner(s)
+    │   ├── evaluator/                          # Hand detectors
+    │   ├── model/                              # Card, Hand
+    │   ├── rank/                               # Comparable rank objects
+    │   └── enums/                              # Rank, Suit
+    │
+    └── test/java/io/github/leopernier/poker/
+        └── MainTest.java                       # Arbiter scenarios + tie cases
+  _models/                                      # PlantUML diagrams
+  Makefile                                      # Diagram generation helpers
+  assets/                                       # Demo GIF and images
+  README.md
+  pom.xml
+  LICENSE
 ```
 
----
+--------------------------------------------------
 
 ## Design Notes
 
@@ -175,7 +171,7 @@ LICENSE
   - Add a new rank object in `rank/`.
   - Register the evaluator in `Arbiter`’s constructor, at the correct priority.
 
----
+--------------------------------------------------
 
 ## License
 
